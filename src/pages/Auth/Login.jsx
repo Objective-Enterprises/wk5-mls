@@ -11,7 +11,13 @@ function Login() {
   return (
     <div className="auth-container">
       <div className="auth-box">
-      {/* Create a Login form */}
+        <form>
+          <input placeholder='Email' />
+          <input placeholder='Password' />
+          <button>
+            Submit
+          </button>
+        </form>
       </div>
     </div>
   );
