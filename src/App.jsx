@@ -19,7 +19,7 @@ function App() {
 
       <main className="main-center-content">
         {currentPage === 'login' ? (
-          <Login />
+          <Login onNavigate={setCurrentPage} />
         ) : currentPage === 'reset-password' ? (
           <ResetPassword onResetPassword={handleResetPassword} />
         ) : (
