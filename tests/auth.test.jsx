@@ -4,6 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import Login from '../src/pages/Auth/Login';
 import Register from '../src/pages/Auth/Register';
+import ResetPassword from '../src/pages/Auth/ResetPassword';
+import App from '../src/App';
 
 describe('Auth Components', () => {
   describe('Login Component', () => {
@@ -44,5 +46,49 @@ describe('Auth Components', () => {
 
       logSpy.mockRestore();
     });
+  });
+
+  describe('ResetPassword Component', () => {
+    it('shows an error and does not reset when passwords do not match', async () => {
+      const onResetPassword = vi.fn();
+
+      render(<ResetPassword onResetPassword={onResetPassword} />);
+      await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
+      await userEvent.type(screen.getByLabelText(/old password/i), 'old-password');
+      await userEvent.type(screen.getByLabelText(/new password/i), 'new-password');
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'different-password');
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+
+      expect(screen.getByRole('alert')).toHaveTextContent(/must match/i);
+      expect(onResetPassword).not.toHaveBeenCalled();
+    });
+
+    it('calls the callback and shows a success message when passwords match', async () => {
+      const onResetPassword = vi.fn();
+
+      render(<ResetPassword onResetPassword={onResetPassword} />);
+      await userEvent.type(screen.getByLabelText(/email/i), 'john@example.com');
+      await userEvent.type(screen.getByLabelText(/old password/i), 'old-password');
+      await userEvent.type(screen.getByLabelText(/new password/i), 'new-password');
+      await userEvent.type(screen.getByLabelText(/confirm password/i), 'new-password');
+      await userEvent.click(screen.getByRole('button', { name: /reset password/i }));
+
+      expect(onResetPassword).toHaveBeenCalledWith({
+        email: 'john@example.com',
+        oldPassword: 'old-password',
+        newPassword: 'new-password',
+        confirmPassword: 'new-password',
+      });
+      expect(screen.getByRole('status')).toHaveTextContent(/successfully/i);
+    });
+  });
+
+  it('opens the reset-password page from the header', async () => {
+    render(<App />);
+
+    await userEvent.click(screen.getByRole('button', { name: /forgot password/i }));
+
+    expect(screen.getByRole('heading', { name: /reset password/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/old password/i)).toBeInTheDocument();
   });
 });

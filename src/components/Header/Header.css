@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: white;
+  background-color: white;
   padding: 12px 24px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -28,6 +28,6 @@
   background-color: blue;
 }
 
-.title{
+.title {
   color: rgb(58, 58, 211);
 }
